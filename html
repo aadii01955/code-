@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Love Them 💖</title>
+  <style>
+    :root{
+      --bg:#fff0f6;
+      --card:#ffffff;
+      --accent:#ff4d94;
+      --muted:#6b6b6b;
+      --glass: rgba(255,255,255,0.6);
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; background:linear-gradient(180deg,var(--bg),#ffeef7); min-height:100vh; display:flex; align-items:center; justify-content:center;}
+    .wrap{width:min(920px,94%); padding:28px; border-radius:16px; background:var(--card); box-shadow:0 10px 30px rgba(0,0,0,0.08); display:grid; grid-template-columns: 1fr 360px; gap:24px; align-items:center;}
+    @media (max-width:880px){ .wrap{grid-template-columns:1fr; padding:20px} .aside{order:-1} }
+    .hero h1{margin:0 0 8px;font-size:34px;color:#222; display:flex; align-items:center; gap:12px}
+    .hero p{margin:0 0 18px;color:var(--muted)}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,0.9), rgba(255,255,255,0.75)); border-radius:12px; padding:18px; box-shadow:0 6px 18px rgba(255,77,148,0.06)}
+
+    /* big message */
+    .message{font-size:20px; line-height:1.45; color:#333}
+
+    /* profile */
+    .aside{display:flex;flex-direction:column;gap:16px}
+    .photo{height:200px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#ff9ac4); display:flex; align-items:center; justify-content:center; color:#fff; font-weight:700; font-size:28px}
+    .name{font-size:20px;font-weight:700}
+    .sub{color:var(--muted); font-size:14px}
+
+    /* heart button */
+    .love-btn{appearance:none;border:0;background:linear-gradient(90deg,var(--accent),#ff8187); color:white;padding:12px 18px;border-radius:999px;font-weight:700;cursor:pointer;box-shadow:0 8px 18px rgba(255,77,148,0.16);display:inline-flex;align-items:center;gap:10px}
+    .love-btn:active{transform:translateY(1px)}
+
+    /* small controls */
+    .controls{display:flex;gap:8px;flex-wrap:wrap}
+    .btn-ghost{background:transparent;border:1px solid rgba(0,0,0,0.06);padding:8px 12px;border-radius:8px;cursor:pointer}
+
+    /* floating hearts */
+    .heart{position:fixed; width:36px;height:36px; transform:translate(-50%, -50%) scale(0.95); pointer-events:none; animation:floatUp 1400ms cubic-bezier(.2,.9,.3,1) forwards}
+    .heart svg{width:100%;height:100%}
+    @keyframes floatUp{
+      0%{opacity:1; transform:translate(-50%,-50%) scale(0.9) rotate(0deg)}
+      100%{opacity:0; transform:translate(-50%,-300%) scale(1.3) rotate(20deg)}
+    }
+
+    footer{grid-column:1/-1; text-align:center;color:var(--muted); font-size:13px; margin-top:8px}
+
+    /* subtle sparkle */
+    .sparkle{position:absolute; inset:0; pointer-events:none; opacity:0.14; background-image:radial-gradient(circle at 10% 10%, rgba(255,255,255,0.6) 0 2px, transparent 3px), radial-gradient(circle at 80% 80%, rgba(255,255,255,0.4) 0 2px, transparent 3px)}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="hero">
+      <div class="card">
+        <h1>Love Them ❤️</h1>
+        <p>Send a little heart, a short note, or keep this page as a tiny love shrine — perfect for surprising someone special.</p>
+
+        <div class="message" id="messageArea">Dear <strong id="toName">Someone</strong>,<br><br>
+          You make ordinary moments feel magical. Thank you for being you — today and every day.
+        </div>
+
+        <div style="margin-top:18px; display:flex; gap:10px; align-items:center;">
+          <button class="love-btn" id="loveBtn" title="Send heart">💓 Send Heart</button>
+          <div class="controls">
+            <button class="btn-ghost" id="editBtn">Edit message</button>
+            <button class="btn-ghost" id="shareBtn">Copy link</button>
+          </div>
+        </div>
+
+        <div style="margin-top:12px; font-size:13px; color:var(--muted)">Tip: Click the pink area (photo) to change the name and message.</div>
+      </div>
+    </div>
+
+    <aside class="aside">
+      <div class="photo card" id="photo">Your Love</div>
+      <div class="card" style="padding:12px">
+        <div class="name" id="displayName">Someone Special</div>
+        <div class="sub" id="displaySub">Beloved • Always</div>
+      </div>
+    </aside>
+
+    <footer>Made with ♥ — Customize the text, colors or add photos. Enjoy!</footer>
+    <div class="sparkle"></div>
+  </div>
+
+  <script>
+    // small interactive behaviors: change name/message, spawn hearts, copy share text
+    const photo = document.getElementById('photo');
+    const toName = document.getElementById('toName');
+    const displayName = document.getElementById('displayName');
+    const displaySub = document.getElementById('displaySub');
+    const messageArea = document.getElementById('messageArea');
+    const loveBtn = document.getElementById('loveBtn');
+    const editBtn = document.getElementById('editBtn');
+    const shareBtn = document.getElementById('shareBtn');
+
+    function ask(promptText, defaultVal){
+      const t = prompt(promptText, defaultVal || '');
+      return t ? t.trim() : null;
+    }
+
+    photo.addEventListener('click', ()=>{
+      const name = ask('Enter the name to show:', displayName.textContent) || displayName.textContent;
+      const note = ask('Write a short message:', messageArea.textContent.replace(/\n/g,' ')) || messageArea.textContent;
+      displayName.textContent = name;
+      toName.textContent = name.split(' ')[0] || name;
+      messageArea.innerHTML = note.replace(/\n/g,'<br>');
+    });
+
+    editBtn.addEventListener('click', ()=> photo.click());
+
+    function spawnHeart(x,y){
+      const heart = document.createElement('div');
+      heart.className = 'heart';
+      heart.style.left = x + 'px';
+      heart.style.top = y + 'px';
+      // random size
+      const s = 18 + Math.random()*36;
+      heart.style.width = s + 'px';
+      heart.style.height = s + 'px';
+      // color variety
+      const fill = Math.random() > 0.5 ? '#ff5ca8' : '#ff7b9a';
+      heart.innerHTML = `<svg viewBox="0 0 24 24" fill="${fill}" xmlns="http://www.w3.org/2000/svg"><path d="M12 21s-7.5-4.35-9.07-7.01C.96 10.96 4.39 6 8.8 6c2.27 0 3.95 1.03 3.95 1.03S14.93 6 17.2 6C21.61 6 25.04 10.96 21.07 13.99 19.5 16.65 12 21 12 21z"/></svg>`;
+      document.body.appendChild(heart);
+      setTimeout(()=> heart.remove(), 1600);
+    }
+
+    loveBtn.addEventListener('click', (e)=>{
+      // spawn 6 hearts around the button
+      const rect = e.currentTarget.getBoundingClientRect();
+      for(let i=0;i<6;i++){
+        const rx = rect.left + rect.width/2 + (Math.random()-0.5)*120;
+        const ry = rect.top + (Math.random()-0.2)*40;
+        setTimeout(()=> spawnHeart(rx, ry), i*80);
+      }
+      // also flash a short message
+      const old = loveBtn.textContent;
+      loveBtn.textContent = 'Sent ❤️';
+      setTimeout(()=> loveBtn.textContent = old, 1200);
+    });
+
+    shareBtn.addEventListener('click', ()=>{
+      const text = `A little love note for ${displayName.textContent}:\n\n${messageArea.textContent}\n\n— Shared from Love Them page`;
+      navigator.clipboard?.writeText(text).then(()=>{
+        shareBtn.textContent = 'Copied!';
+        setTimeout(()=> shareBtn.textContent = 'Copy link', 1200);
+      }).catch(()=>{
+        alert('Copy failed — you can manually select the message and copy.');
+      });
+    });
+
+    // optional: click anywhere to spawn tiny hearts for fun
+    document.body.addEventListener('dblclick', (e)=> spawnHeart(e.clientX, e.clientY));
+  </script>
+</body>
+</html>
